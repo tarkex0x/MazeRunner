@@ -1,1 +1,1 @@
-# MazeRunner
+MazeRunner is an interactive game developed in Go, designed to challenge users by navigating through a dynamically generated maze. Upon starting the project, the game initiates by constructing a complex maze structure and smoothly transitions into the main gameplay loop. Players are prompted to make strategic movements, aiming to find their way through the labyrinthine paths to reach the end goal. Dive into MazeRunner, where each game is a unique puzzle waiting to be solved!
