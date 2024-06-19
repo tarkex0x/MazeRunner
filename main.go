@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-type Maze struct {
-	grid [][]string
-	playerX, playerY int
+type MazeGame struct {
+	grid      [][]string
+	playerRow, playerCol int
 }
 
-func NewMaze() *Maze {
-	return &Maze{
+func NewMazeGame() *MazeGame {
+	return &MazeGame{
 		grid: [][]string{
 			{"#", "#", "#", "#", "#", "#", "#", "#", "#", "#"},
 			{"#", " ", " ", " ", "#", " ", " ", " ", " ", "#"},
@@ -26,49 +26,49 @@ func NewMaze() *Maze {
 			{"#", " ", "#", "#", "#", "#", " ", "#", " ", "#"},
 			{"#", "#", "#", "#", "#", "#", "#", "#", "P", "#"},
 		},
-		playerX: 9,
-		playerY: 8,
+		playerRow: 9,
+		playerCol: 8,
 	}
 }
 
-func (m *Maze) PrintMaze() {
-	for _, row := range m.grid {
-		for _, col := range row {
-			fmt.Print(col)
+func (game *MazeGame) DisplayMaze() {
+	for _, row := range game.grid {
+		for _, cell := range row {
+			fmt.Print(cell)
 		}
 		fmt.Println()
 	}
 }
 
-func (m *Maze) MovePlayer(direction string) {
-	m.grid[m.playerX][m.playerY] = " "
+func (game *MazeGame) MovePlayer(direction string) {
+	game.grid[game.playerRow][game.playerCol] = " "
 	switch direction {
 	case "UP":
-		if m.playerX > 0 && m.grid[m.playerX-1][m.playerY] != "#" {
-			m.playerX--
+		if game.playerRow > 0 && game.grid[game.playerRow-1][game.playerCol] != "#" {
+			game.playerRow--
 		}
 	case "DOWN":
-		if m.playerX < len(m.grid)-1 && m.grid[m.playerX+1][m.playerY] != "#" {
-			m.playerX++
+		if game.playerRow < len(game.grid)-1 && game.grid[game.playerRow+1][game.playerCol] != "#" {
+			game.playerRow++
 		}
 	case "LEFT":
-		if m.playerY > 0 && m.grid[m.playerX][m.playerY-1] != "#" {
-			m.playerY--
+		if game.playerCol > 0 && game.grid[game.playerRow][game.playerCol-1] != "#" {
+			game.playerCol--
 		}
 	case "RIGHT":
-		if m.playerY < len(m.grid[0])-1 && m.grid[m.playerX][m.playerY+1] != "#" {
-			m.playerY++
+		if game.playerCol < len(game.grid[0])-1 && game.grid[game.playerRow][game.playerCol+1] != "#" {
+			game.playerCol++
 		}
 	}
-	m.grid[m.playerX][m.playerY] = "P"
+	game.grid[game.playerRow][game.playerCol] = "P"
 }
 
 func main() {
-	maze := NewMaze()
+	mazeGame := NewMazeGame()
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
-		maze.PrintMaze()
+		mazeGame.DisplayMaze()
 		fmt.Println("Move with UP, DOWN, LEFT, RIGHT or type EXIT to quit:")
 
 		scanner.Scan()
@@ -79,6 +79,6 @@ func main() {
 			break
 		}
 
-		maze.MovePlayer(input)
+		mazeGame.MovePlayer(input)
 	}
 }
