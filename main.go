@@ -22,7 +22,7 @@ func NewMazeGame() *MazeGame {
             {"#", " ", "#", "#", "#", " ", "#", " ", "#", "#"},
             {"#", " ", " ", " ", "#", " ", " ", " ", " ", "#"},
             {"#", "#", "#", " ", "#", "#", "#", "#", " ", "#"},
-            {"#", " ", " ", " ", " ", " ", " ", "#", " ", "#"},
+            {"#", " ", " ", " ", " ", " ", " ", "#", " ", "G"},
             {"#", " ", "#", "#", "#", "#", " ", "#", " ", "#"},
             {"#", "#", "#", "#", "#", "#", "#", "#", "P", "#"},
         },
@@ -41,27 +41,44 @@ func (game *MazeGame) DisplayMaze() {
 }
 
 func (game *MazeGame) MovePlayer(direction string) {
-    game.grid[game.playerRow][game.playerCol] = " "
+    oldRow, oldCol := game.playerRow, game.playerCol 
     switch direction {
     case "UP":
-        if game.playerRow > 0 && game.grid[game.playerRow-1][game.playerCol] != "#" {
-            game.playerRow--
-        }
+        game.playerRow = max(game.playerRow-1, 0)
     case "DOWN":
-        if game.playerRow < len(game.grid)-1 && game.grid[game.playerRow+1][game.playerCol] != "#" {
-            game.playerRow++
-        }
+        game.playerRow = min(game.playerRow+1, len(game.grid)-1)
     case "LEFT":
-        if game.playerCol > 0 && game.grid[game.playerRow][game.playerCol-1] != "#" {
-            game.playerCol--
-        }
+        game.playerCol = max(game.playerCol-1, 0)
     case "RIGHT":
-        if game.playerCol < len(game.grid[0])-1 && game.grid[game.playerRow][game.playerCol+1] != "#" {
-            game.playerCol++
-        }
+        game.playerCol = min(game.playerCol+1, len(game.grid[0])-1)
     }
+
+    if game.grid[game.playerRow][game.playerCol] == "#" {
+        game.playerRow, game.playerCol = oldRow, oldCol
+        return
+    }
+
+    if game.grid[game.playerRow][game.playerCol] == "G" {
+        fmt.Println("Congratulations! You've reached the goal.")
+        os.Exit(0)
+    }
+
+    game.grid[oldRow][oldCol] = " "
     game.grid[game.playerRow][game.playerCol] = "P"
-    // Check for victory here if you have victory conditions such as reaching a certain point
+}
+
+func min(x, y int) int {
+    if x < y {
+        return x
+    }
+    return y
+}
+
+func max(x, y int) int {
+    if x > y {
+        return x
+    }
+    return y
 }
 
 func main() {
@@ -80,9 +97,8 @@ func main() {
             break
         }
 
-        // Check if the input is one of the valid directions
         if input == "UP" || input == "DOWN" || input == "LEFT" || input == "RIGHT" {
-            mazeGame.MovePlayer(input)
+            mazeStayed.MovePlayer(input)
         } else {
             fmt.Println("Invalid input. Please enter UP, DOWN, LEFT, RIGHT, or EXIT.")
         }
