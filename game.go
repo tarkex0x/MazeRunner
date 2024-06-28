@@ -8,61 +8,62 @@ import (
 )
 
 const (
-	GameRunning = iota
-	GameOver
-	GameWon
+	StatusRunning = iota
+	StatusGameOver // Assuming you might want this for further development.
+	StatusWon
 )
 
-type Position struct {
+type Coordinates struct {
 	X, Y int
 }
 
-type Player struct {
-	Position
+type Explorer struct {
+	Coordinates
 }
 
-type GameState struct {
-	Player    Player
-	Maze      [][]int
-	GameState int
+type MazeState struct {
+	Explorer Explorer
+	Maze     [][]int
+	Status   int
 }
 
-func initMaze(rows, cols int) [][]int {
+func generateMaze(rows, columns int) [][]int {
 	maze := make([][]int, rows)
 	for i := range maze {
-		maze[i] = make([]int, cols)
+		maze[i] = make([]int, columns)
 		for j := range maze[i] {
-			maze[i][j] = rand.Intn(2)
+			maze[i][j] = rand.Intn(2) // 0 for path, 1 for wall
 		}
 	}
-	maze[0][0], maze[rows-1][cols-1] = 0, 0
+	// Start and finish should always be paths
+	maze[0][0], maze[rows-1][columns-1] = 0, 0
 	return maze
 }
 
-func initGame() GameState {
-	rows, cols := 10, 10
-	maze := initMaze(rows, cols)
-	player := Player{Position{0, 0}}
-	return GameState{player, maze, GameRunning}
+func startGame() MazeState {
+	rows, columns := 10, 10
+	maze := generateMaze(rows, columns)
+	explorer := Explorer{Coordinates{0, 0}}
+	return MazeState{Explorer: explorer, Maze: maze, Status: StatusRunning}
 }
 
-func (game *GameState) updateGameState(move string) {
-	directions := map[string]Position{
+func (ms *MazeState) moveExplorer(direction string) {
+	moves := map[string]Coordinates{
 		"UP":    {0, -1},
 		"DOWN":  {0, 1},
 		"LEFT":  {-1, 0},
 		"RIGHT": {1, 0},
 	}
 
-	if dir, ok := directions[move]; ok {
-		newX, newY := game.Player.X+dir.X, game.Player.Y+dir.Y
-		if newX >= 0 && newY >= 0 && newX < len(game.Maze[0]) && newY < len(game.Maze) && game.Maze[newY][newX] == 0 {
-			game.Player.X, game.Player.Y = newX, newY
+	if move, ok := moves[direction]; ok {
+		newX, newY := ms.Explorer.X+move.X, ms.Explorer.Y+move.Y
+		if newX >= 0 && newY >= 0 && newX < len(ms.Maze[0]) && newY < len(ms.Maze) && ms.Maze[newY][newX] == 0 {
+			ms.Explorer.X, ms.Explorer.Y = newX, newY
 		}
 	}
 
-	if game.Player.X == len(game.Maze[0])-1 && game.Player.Y == len(game.Maze)-1 {
-		game.GameState = GameWon
+	if ms.Explorer.X == len(ms.Maze[0])-1 && ms.Explorer.Y == len(ms.Maze)-1 {
+		ms.Status = StatusWon
 	}
 }
 
@@ -70,25 +71,24 @@ func main() {
 	rate, _ := time.ParseDuration(os.Getenv("RATE"))
 	rand.Seed(time.Now().UnixNano())
 
-	game := initGame()
+	game := startGame()
 
-	for game.GameState == GameRunning {
-		var move string
+	for game.Status == StatusRunning {
+		var direction string
 		fmt.Println("Enter move (UP, DOWN, LEFT, RIGHT):")
-		fmt.Scanln(&move)
+		fmt.Scanln(&direction)
 
-		game.updateGameState(move)
+		game.moveExplorer(direction)
 
 		fmt.Println("Current Maze (Pseudo-representation):")
 		for _, row := range game.Maze {
-			for _, col := range row {
-				fmt.Print(col, " ")
+			for _, cell := range row {
+				fmt.Print(cell, " ")
 			}
 			fmt.Println()
 		}
 
-		switch game.GameState {
-		case GameWon:
+		if game.Status == StatusWon {
 			fmt.Println("Congratulations, you've won!")
 			return
 		}
