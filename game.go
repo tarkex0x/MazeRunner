@@ -23,16 +23,17 @@ type Explorer struct {
 
 type MazeState struct {
 	Explorer Explorer
-	Maze     [][]int
+	Maze     [][]byte // Using byte instead of int for less memory consumption
 	Status   int
 }
 
-func generateMaze(rows, columns int) [][]int {
-	maze := make([][]int, rows)
+// Generating maze using byte slices to use less memory
+func generateMaze(rows, columns int) [][]byte {
+	maze := make([][]byte, rows)
 	for i := range maze {
-		maze[i] = make([]int, columns)
+		maze[i] = make([]byte, columns)
 		for j := range maze[i] {
-			maze[i][j] = rand.Intn(2) // 0 for path, 1 for wall
+			maze[i][j] = byte(rand.Intn(2)) // 0 for path, 1 for wall, using byte
 		}
 	}
 	// Start and finish should always be paths
