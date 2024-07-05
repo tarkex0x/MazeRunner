@@ -4,18 +4,19 @@ import (
     "fmt"
     "math/rand"
     "os"
+    "strconv"
     "strings"
     "time"
 )
 
 type MazeCell struct {
-    X, Y     int  
-    Visited  bool 
-    Walls    [4]bool 
+    X, Y     int
+    Visited  bool
+    Walls    [4]bool
 }
 
 type Maze struct {
-    Cells [][]MazeCell
+    Cells         [][]MazeCell
     Width, Height int
 }
 
@@ -34,7 +35,7 @@ func (m *Maze) GenerateMaze() {
     var stack []MazeCell
     currentCell := &m.Cells[0][0]
     currentCell.Visited = true
-    stack = append(stack, *current332Cell)
+    stack = append(stack, *currentCell)
 
     for len(stack) > 0 {
         nextCell := m.GetNextCell(*currentCell)
@@ -55,7 +56,7 @@ func (m *Maze) GenerateMaze() {
 func (m *Maze) GetNextCell(cell MazeCell) *MazeCell {
     neighbors := []MazeCell{}
 
-    directions := []struct{ dx, dy int }{{0, -1}, {1, 0}, {0, 1}, {-1, 0}} 
+    directions := []struct{ dx, dy int }{{0, -1}, {1, 0}, {0, 1}, {-1, 0}}
     for _, dir := range directions {
         x, y := cell.X+dir.dx, cell.Y+dir.dy
 
@@ -93,7 +94,6 @@ func (m *Maze) RemoveWalls(current, next *MazeCell) {
 
 func (m *Maze) Render() {
     for i := 0; i < m.Height; i++ {
-        // Top walls
         for j := 0; j < m.Width; j++ {
             fmt.Print("+")
             if m.Cells[i][j].Walls[0] {
@@ -103,7 +103,6 @@ func (m *Maze) Render() {
             }
         }
         fmt.Println("+")
-        // Side walls
         for j := 0; j < m.Width; j++ {
             if m.Cells[i][j].Walls[3] {
                 fmt.Print("|")
@@ -114,7 +113,6 @@ func (m *Maze) Render() {
         }
         fmt.Println("|")
     }
-    // Print the bottom wall
     fmt.Println(strings.Repeat("+---", m.Width) + "+")
 }
 
@@ -124,9 +122,12 @@ func main() {
         os.Exit(1)
     }
     
-    var width, height int
-    fmt.Sscanf(os.Args[1], "%d", &width)
-    fmt.Sscanf(os.Args[2], "%d", &height)
+    width, errWidth := strconv.Atoi(os.Args[1])
+    height, errHeight := strconv.Atoi(os.Args[2])
+    if errWidth != nil || errHeight != nil || width <= 0 || height <= 0 {
+        fmt.Println("Width and height must be positive integers")
+        os.Exit(1)
+    }
 
     maze := Maze{Width: width, Height: height}
     maze.Initialize()
