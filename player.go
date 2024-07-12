@@ -8,8 +8,10 @@ import (
 )
 
 type Player struct {
-	X int
-	Y int
+	X      int
+	Y      int
+	MaxX   int
+	MaxY   int
 }
 
 func (p *Player) MoveUp() {
@@ -19,12 +21,7 @@ func (p *Player) MoveUp() {
 }
 
 func (p *Player) MoveDown() {
-	maxY, err := strconv.Atoi(os.Getenv("MAZE_HEIGHT"))
-	if err != nil {
-		fmt.Println("Error: Invalid MAZE_HEIGHT environment variable value")
-		return
-	}
-	if p.Y < maxY-1 {
+	if p.Y < p.MaxY-1 {
 		p.Y += 1
 	}
 }
@@ -36,12 +33,7 @@ func (p *Player) MoveLeft() {
 }
 
 func (p *Player) MoveRight() {
-	maxX, err := strconv.Atoi(os.Getenv("MAZE_WIDTH"))
-	if err != nil {
-		fmt.Println("Error: Invalid MAZE_WIDTH environment variable value")
-		return
-	}
-	if p.X < maxX-1 {
+	if p.X < p.MaxX-1 {
 		p.X += 1
 	}
 }
@@ -80,9 +72,16 @@ func getEnvAsInt(key string) (int, error) {
 }
 
 func main() {
-	player := Player{X: 0, Y: 0}
+	maxX, errX := getEnvAsInt("MAZE_WIDTH")
+	maxY, errY := getEnvAsInt("MAZE_HEIGHT")
+	if errX != nil || errY != nil {
+		fmt.Println("Error reading MAZE dimensions: ", errX, errY)
+		return
+	}
+
+	player := Player{X: 0, Y: 0, MaxX: maxX, MaxY: maxY}
 
 	player.UpdatePosition("right")
 	player.UpdatePosition("down")
-	player.DisplayPosition()
+	player.DisplayOutputPosition()
 }
