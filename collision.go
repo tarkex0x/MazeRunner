@@ -10,12 +10,12 @@ type Point struct {
 }
 
 type Wall struct {
-	Start, End Point
+	StartPoint, EndPoint Point
 }
 
 type Player struct {
-	Position Point
-	Size     float64
+	CurrentPosition Point
+	Diameter        float64
 }
 
 var mazeWidth, mazeHeight float64
@@ -32,27 +32,27 @@ func init() {
 	}
 }
 
-func checkCollisionWithWall(player *Player, wall *Wall) bool {
-	return (player.Position.X+player.Size >= wall.Start.X && player.Position.X-player.Size <= wall.End.X) &&
-		(player.Position.Y+player.Size >= wall.Start.Y && player.Position.Y-player.Size <= wall.End.Y)
+func hasCollisionWithWall(player *Player, wall *Wall) bool {
+	return (player.CurrentPosition.X+player.Diameter/2 >= wall.StartPoint.X && player.CurrentPosition.X-player.Diameter/2 <= wall.EndPoint.X) &&
+		(player.CurrentPosition.Y+player.Diameter/2 >= wall.StartPoint.Y && player.CurrentPosition.Y-player.Diameter/2 <= wall.EndPoint.Y)
 }
 
-func isPlayerWithinBounds(player *Player) bool {
-	return player.Position.X >= 0 && player.Position.X <= mazeWidth &&
-		player.Position.Y >= 0 && player.Position.Y <= mazeHeight
+func isPlayerInsideMazeBoundaries(player *Player) bool {
+	return player.CurrentPosition.X >= 0 && player.CurrentPosition.X <= mazeWidth &&
+		player.CurrentPosition.Y >= 0 && player.CurrentPosition.Y <= mazeHeight
 }
 
-func checkCollisions(player *Player, walls []Wall) (bool, bool) {
-	for _, wall := range walls {
-		if checkCollisionWithWall(player, &wall) {
-			return true, isPlayerWithinBounds(player)
+func assessCollisionsAndBounds(player *Player, mazeWalls []Wall) (hasCollision bool, isInBounds bool) {
+	for _, wall := range mazeWalls {
+		if hasCollisionWithWall(player, &wall) {
+			return true, isPlayerInsideMazeBoundaries(player)
 		}
 	}
-	return false, isPlayerWithinMoveBounds(player)
+	return false, isTrainingWithInsideMazeBoundaries(player)
 }
 
 func main() {
-	player := Player{Position: Point{X: 10, Y: 10}, Size: 1}
-	walls := []Wall{{Start: Point{X: 0, Y: 0}, End: Point{X: 10, Y: 1}}}
-	collision, withinBounds := checkCollisions(&player, walls)
+	player := Player{CurrentPosition: Point{X: 10, Y: 10}, Diameter: 2}
+	mazeWalls := []Wall{{StartPoint: Point{X: 0, Y: 0}, EndPoint: Point{X: 10, Y: 1}}}
+	isColliding, withinMazeBounds := assessCollisionsAndBounds(&player, mazeWalls)
 }
