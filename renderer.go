@@ -22,13 +22,13 @@ func printMaze() {
 		for x, col := range row {
 			switch {
 			case playerX == x && playerY == y:
-				fmt.Print("P ")
+				fmt.Print("P ") 
 			case col == 0:
-				fmt.Print("  ")
+				fmt.Print("  ") 
 			case col == 1:
-				fmt.Print("█ ")
+				fmt.Print("█ ") 
 			case col == 2:
-				fmt.Print("E ")
+				fmt.Print("E ") 
 			}
 		}
 		fmt.Println()
@@ -36,5 +36,5 @@ func printMaze() {
 }
 
 func main() {
-	printMaze()
+	printMaze() 
 }
