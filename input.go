@@ -32,16 +32,24 @@ func convertInputToCommand(input string) Command {
 	}
 }
 
-func readUserInput(prompt string) string {
+func readUserInput(prompt string) (string, error) {
 	fmt.Print(prompt)
 	reader := bufio.NewReader(os.Stdin)
-	input, _ := reader.ReadString('\n')
-	return strings.TrimSpace(input)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err // Return the error to be handled by the caller
+	}
+	return strings.TrimSpace(input), nil
 }
 
 func main() {
 	for {
-		userInput := readUserInput("Enter move (W/A/S/D): ")
+		userInput, err := readUserInput("Enter move (W/A/S/D): ")
+		if err != nil {
+			fmt.Println("Error reading input:", err) //Handling error here
+			continue
+		}
+
 		command := convertInputToCommand(userInput)
 		switch command {
 		case MoveUp:
