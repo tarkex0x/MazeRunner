@@ -8,7 +8,9 @@ import (
 )
 
 func getRandomInt(min, max int) int {
-	rand.Seed(time.Now().UnixNano())
+	if min >= max {
+		return min
+	}
 	return rand.Intn(max-min+1) + min
 }
 
@@ -31,4 +33,5 @@ func main() {
 	min := 1
 	max := 10
 	randomNumber := getRandomInt(min, max)
+	_ = randomNumber
 }
