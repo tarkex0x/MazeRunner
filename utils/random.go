@@ -7,31 +7,31 @@ import (
 	"time"
 )
 
-func getRandomInt(min, max int) int {
+func getRandomNumberInRange(min, max int) int {
 	if min >= max {
 		return min
 	}
 	return rand.Intn(max-min+1) + min
 }
 
-func getEnvAsInt(name string, defaultValue int) int {
-	valueStr := os.Getenv(name)
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
+func getEnvironmentVariableAsInteger(variableName string, defaultValue int) int {
+	envValue := os.Getenv(variableName)
+	if intValue, err := strconv.Atoi(envValue); err == nil {
+		return intValue
 	}
 	return defaultValue
 }
 
-func initRandSeed() {
-	seedValue := getEnvAsInt("MAZE_RUNNER_SEED", int(time.Now().Unix()))
-	rand.Seed(int64(seedValue))
+func initializeRandomSeed() {
+	seed := getEnvironmentVariableAsInteger("MAZE_RUNNER_SEED", int(time.Now().Unix()))
+	rand.Seed(int64(seed))
 }
 
 func main() {
-	initRandSeed()
+	initializeRandomSeed()
 
-	min := 1
-	max := 10
-	randomNumber := getRandomInt(min, max)
-	_ = randomNumber
+	minValue := 1
+	maxValue := 10
+	randomValue := getRandomNumberInRange(minValue, maxValue)
+	_ = randomValue
 }
