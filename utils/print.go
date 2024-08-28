@@ -35,3 +35,24 @@ func GetEnv(key, fallback string) string {
 	}
 	return fallback
 }
+
+func LogMessage(messageType, message string) {
+	switch messageType {
+	case "info":
+		log.Println("INFO:", message)
+	case "error":
+		log.Fatalf("ERROR: %s", message)
+	default:
+		log.Printf("UNKNOWN TYPE: %s", message)
+	}
+}
+
+func main() {
+	LoadEnvironment()
+	PrintMessage("Starting MazeRunner...")
+	PrintGameState(1, 2, 3, 4, false)
+	LogMessage("info", "This is a test info log.")
+
+	envValue := GetEnv("SOME_KEY", "defaultValue")
+	PrintMessage("Environment Value: " + envValue)
+}
