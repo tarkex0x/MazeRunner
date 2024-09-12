@@ -9,9 +9,10 @@ import (
 )
 
 func LoadEnvironment() {
+	// Load the .env file, capture and handle the error internally
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		LogMessage("error", "Error loading .env file")
 	}
 }
 
@@ -37,17 +38,21 @@ func GetEnv(key, fallback string) string {
 }
 
 func LogMessage(messageType, message string) {
+	// Simplified to only log messages and not terminate the application on errors
 	switch messageType {
 	case "info":
 		log.Println("INFO:", message)
 	case "error":
-		log.Fatalf("ERROR: %s", message)
+		log.Println("ERROR:", message) // Changed from log.Fatalf to log.Println to prevent app termination
 	default:
 		log.Printf("UNKNOWN TYPE: %s", message)
 	}
 }
 
 func main() {
+	// Initialize log formatting
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	LoadEnvironment()
 	PrintMessage("Starting MazeRunner...")
 	PrintGameState(1, 2, 3, 4, false)
